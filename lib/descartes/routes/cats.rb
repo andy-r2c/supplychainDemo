@@ -6,8 +6,8 @@ module Descartes
         content_type 'application/json'
         @cats = []
         begin
-          doc = Nokogiri::HTML(open("http://thecatapi.com/api/images/get?format=xml&size=small&results_per_page=#{params[:count]}"))
-          doc.css('url').each do |kitty|
+          doc1 = Nokogiri::HTML(open("http://thecatapi.com/api/images/get?format=xml&size=small&results_per_page=#{params[:count]}"))
+          doc1.css('url').each do |kitty|
             @cats << kitty.content
           end
         rescue => e
@@ -21,4 +21,21 @@ module Descartes
       end
     end
   end
+end
+
+class DangerousController < ApplicationController
+  # ruleid:hardcoded-http-auth-in-controller
+  http_basic_authenticate_with :name => "dhh", :password => "secret", :except => :index
+
+  puts "do more stuff"
+
+end
+
+# ok:hardcoded-http-auth-in-controller
+class OkController < ApplicationController
+
+  http_basic_authenticate_with :name => "dhh", :password => not_a_string, :except => :index
+
+  puts "do more stuff"
+
 end
